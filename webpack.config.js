@@ -609,6 +609,12 @@ module.exports = async (env, argv) => {
       ]),
       new CopyWebpackPlugin([
         {
+          from: "src/third-party-libs",
+          to: "third-party-libs"
+        }
+      ]),
+      new CopyWebpackPlugin([
+        {
           from: "src/schema.toml",
           to: "schema.toml"
         }
