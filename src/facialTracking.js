@@ -12,40 +12,35 @@ export default class FacialTracking extends Component {
     
         video.addEventListener('play', () => {
             const canvas = faceapi.createCanvasFromMedia(video)
-            document.body.append(canvas)
+            video.parentElement.append(canvas)
             const displaySize = { width: video.width, height: video.height }
             faceapi.matchDimensions(canvas, displaySize)
             setInterval(async () => {
-                const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
-                const resizedDetections = faceapi.resizeResults(detections, displaySize)
+//                const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
+                const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks()
+                //const resizedDetections = faceapi.resizeResults(detections, displaySize)
                 canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
-                faceapi.draw.drawDetections(canvas, resizedDetections)
-                faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
-                faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
+//                faceapi.draw.drawDetections(canvas, resizedDetections)
+                faceapi.draw.drawFaceLandmarks(canvas, detections)
+//                faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
             }, 100)
         });
+        const modelsLoc = '/third-party-libs/face-api/models';
+
         
+
         Promise.all([
-            faceapi.nets.tinyFaceDetector.loadFromUri('/third-party-libs/face-api/models'),
-            faceapi.nets.faceLandmark68Net.loadFromUri('/third-party-libs/face-api/models'),
-            faceapi.nets.faceRecognitionNet.loadFromUri('/third-party-libs/face-api/models'),
-            faceapi.nets.faceExpressionNet.loadFromUri('/third-party-libs/face-api/models')
+            faceapi.nets.tinyFaceDetector.loadFromUri(modelsLoc),
+            faceapi.nets.faceLandmark68Net.loadFromUri(modelsLoc)
+            //faceapi.nets.faceRecognitionNet.loadFromUri(modelsLoc),
+            //faceapi.nets.faceExpressionNet.loadFromUri(modelsLoc)
         ]).then(this._startVideo);
     }
     
     _startVideo() {
         const video = document.getElementById('facialTrackingVideoView');
-
-        /*
-        navigator.mediaDevices.getUserMedia(
-            { video: {} },
-            stream => video.srcObject = stream,
-            err => console.error(err)
-        )
-        */
-
         if (navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({ video: true })
+            navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: "user" } })
               .then(function (stream) {
                 video.srcObject = stream;
               })
