@@ -182,6 +182,7 @@
     "esm": "^3.2.5",
     "fast-plural-rules": "0.0.3",
     "file-loader": "^1.1.10",
+    "binary-loader": "^0.0.1",
     "glob": "^7.1.6",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^4.2.0",

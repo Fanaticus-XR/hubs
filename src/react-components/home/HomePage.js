@@ -163,6 +163,9 @@ export function HomePage() {
           <Button lg preset="primary" as="a" href="/link">
             <FormattedMessage id="home-page.have-code" defaultMessage="Have a room code?" />
           </Button>
+          <Container>
+            <video id="facialTrackingVideoView" width="720" height="560" autoPlay muted></video>
+          </Container>
         </Column>
       </Container>
     </PageContainer>

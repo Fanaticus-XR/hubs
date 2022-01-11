@@ -346,6 +346,8 @@ export class CharacterControllerSystem {
         }
       }
 
+      
+
       childMatch(this.avatarRig.object3D, this.avatarPOV.object3D, newPOV);
       this.relativeMotion.copy(this.nextRelativeMotion);
       this.dXZ = 0;
