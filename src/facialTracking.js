@@ -1,19 +1,8 @@
 import { Component } from "react";
-//import urlsss from "";
 
 var path = require("path");
 
-/*
-export const modelsLoc = function(url) {
-    if (url === "basis_transcoder.js") {
-      return basisJsUrl;
-    } else if (url === "basis_transcoder.wasm") {
-      return basisWasmUrl;
-    }
-    return url;
-  };
-*/
-
+// The following imports of face tracking files is where all the custom loading is for getting this file content available to the face-api in a hubs approved way (see also webpack.config.js)
 import tinyFaceDetectorModelWeights from "../src/assets/third-party-libs/face-api/models/tiny_face_detector_model-weights_manifest.json";
 import tinyFaceDetectorBin from "!!binary-loader!../src/assets/third-party-libs/face-api/models/tiny_face_detector_model-shard1.bin";
 
@@ -45,7 +34,7 @@ export default class FacialTracking extends Component {
         });
         
         
-        const modelsLoc = '/hubs/assets/src/third-party-libs/face-api/models';
+        const modelsLoc = '/hubs/assets/src/third-party-libs/face-api/models'; // IMPORTANT: This is not used and is only here to have something to pass in to existing functions below without having to do too much refactoring in their code
 
         Promise.all([
             faceapi.nets.tinyFaceDetector.loadFromUri(modelsLoc, tinyFaceDetectorModelWeights, tinyFaceDetectorBin),
@@ -53,13 +42,6 @@ export default class FacialTracking extends Component {
             //faceapi.nets.faceRecognitionNet.loadFromUri(modelsLoc),
             //faceapi.nets.faceExpressionNet.loadFromUri(modelsLoc)
         ]).then(this._startVideo);
-
-        /*
-        // no more false promises needed:
-        faceapi.nets.tinyFaceDetector.loadFromUri(modelsLoc, tinyFaceDetectorModelWeights, tinyFaceDetectorBin);
-        faceapi.nets.faceLandmark68Net.loadFromUri(modelsLoc, faceLandmark86ModelWeights, faceLandmark86Bin);
-        this._startVideo();
-        */
     }
     
     _startVideo() {
