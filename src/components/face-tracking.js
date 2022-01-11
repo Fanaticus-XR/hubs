@@ -34,7 +34,7 @@ export class FaceTrackingSystem {
                     const networkedEl = networkedByComponent.get(cmp);
                     if (networkedEl) {
                         //console.log('about to manually set rotation on networkId: ' + networkedEl.data.networkId);
-                        networkedEl.setAttribute('rotation', '45 23 219');
+                        networkedEl.setAttribute('rotation', '45 23 219'); // IMPORTANT: This sets the entire body rotation it seems
 
                     }
                 } catch (e) { console.log(e) }

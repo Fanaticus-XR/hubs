@@ -9,7 +9,7 @@ import { AuthContextProvider } from "./react-components/auth/AuthContext";
 import "./react-components/styles/global.scss";
 import { ThemeProvider } from "./react-components/styles/theme";
 import FacialTracking from "./facialTracking"
-import { faceapi } from "./third-party-libs/face-api/face-api.min"
+import { faceapi } from "./assets/third-party-libs/face-api/face-api"
 
 registerTelemetry("/home", "Hubs Home Page");
 

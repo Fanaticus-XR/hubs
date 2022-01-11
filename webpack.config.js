@@ -446,6 +446,31 @@ module.exports = async (env, argv) => {
           }
         },
         {
+          test: /src\/assets\/third-party-libs\/face-api\/models\/\.(json)$/,
+          use: {
+            loader: "file-loader",
+            options: {
+              // move required assets to output dir (TODO: and add a hash for cache busting)
+              name: "[path][name].[ext]",
+              // Make asset paths relative to /src
+              context: path.join(__dirname, "src")
+            }
+          }
+        },
+        {
+          test: /src\/assets\/third-party-libs\/face-api\/models\/\.(bin)$/,
+          type: "javascript/auto",
+          use: {
+            loader: "binary-loader",
+            options: {
+              // move required assets to output dir (TODO: and add a hash for cache busting)
+              name: "[path][name].[ext]",
+              // Make asset paths relative to /src
+              context: path.join(__dirname, "src")
+            }
+          }
+        },
+        {
           test: /\.(wasm)$/,
           type: "javascript/auto",
           use: {
@@ -605,12 +630,6 @@ module.exports = async (env, argv) => {
         {
           from: "src/hub.service.js",
           to: "hub.service.js"
-        }
-      ]),
-      new CopyWebpackPlugin([
-        {
-          from: "src/third-party-libs",
-          to: "third-party-libs"
         }
       ]),
       new CopyWebpackPlugin([
