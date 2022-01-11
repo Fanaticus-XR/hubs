@@ -72,7 +72,6 @@ function r(t,e){var n,r,o,a,i={label:0,sent:function(){if(1&o[0])throw o[1];retu
 function jf(t,e,alreadyLoadedWeightMapRaw){ //t=array of full uris to each bin file to fetch/load, e={requestInit: void 0}
     if (alreadyLoadedWeightMapRaw) {
         e.fetchFunc=function(f) {
-            console.log('bicsmaffles...f:'+f+' typeof alreadyLoadedWeightMapRaw:'+typeof alreadyLoadedWeightMapRaw);
             return Promise.resolve({
                 arrayBuffer: function() {
                     var buf = new ArrayBuffer(alreadyLoadedWeightMapRaw.length*2); // 2 bytes for each char
@@ -81,10 +80,8 @@ function jf(t,e,alreadyLoadedWeightMapRaw){ //t=array of full uris to each bin f
                         bufView[i] = alreadyLoadedWeightMapRaw.charCodeAt(i);
                     }
                     return buf;
-
-                    // nodejs buffer.Buffer: return Buffer.from(alreadyLoadedWeightMapRaw);
                 }
-            }); // TODO need to wrap alreadyLoadedWeightMapRaw in an object that has .arrayBuffer() that returns an ArrayBuffer object representation of the alreadyLoadedWeightMapRaw
+            });
         };
     }
 
@@ -93,7 +90,6 @@ function jf(t,e,alreadyLoadedWeightMapRaw){ //t=array of full uris to each bin f
         return r(this, (function(r) {
             switch (r.label) {
                 case 0:
-                    console.log('i think we are about to try to fetch this bad boi: ' + t);
                     return null == e && (e = {}), n = null == e.fetchFunc ? i().platform.fetch : e.fetchFunc, o = t.map((function(t) { // inner t=full uri to bin file to fetch/load
                         return n(t, e.requestInit, {
                             isBinary: !0
