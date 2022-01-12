@@ -182,12 +182,20 @@ export function fetchReticulumAuthenticated(url, method = "GET", payload) {
   });
 }
 
-export async function createAndRedirectToNewHub(name, sceneId, replace) {
+export async function createAndRedirectToNewHub(name, sceneId, replace, preCreateCheck) {
   const createUrl = getReticulumFetchUrl("/api/v1/hubs");
   const payload = { hub: { name: name || generateHubName() } };
-
+  
   if (sceneId) {
     payload.hub.scene_id = sceneId;
+  }
+
+  if (preCreateCheck) {
+    let check = await preCreateCheck(name, sceneId, replace);
+    if (!check.ok) {
+      console.log('oops, pre create room check did not pass...aborting new hub creation...sorry :-(')
+      return;
+    }
   }
 
   const headers = { "content-type": "application/json" };

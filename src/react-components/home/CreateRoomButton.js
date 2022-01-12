@@ -3,11 +3,9 @@ import { FormattedMessage } from "react-intl";
 import { createAndRedirectToNewHub } from "../../utils/phoenix-utils";
 import { Button } from "../input/Button";
 import { useCssBreakpoints } from "react-use-css-breakpoints";
-import PaymentForm from "../payments/payment-form"
 
-export function CreateRoomButton() {
+export function CreateRoomButton(props) {
   const breakpoint = useCssBreakpoints();
-
   return (
     <Button
       lg={breakpoint === "sm" || breakpoint === "md"}
@@ -15,18 +13,10 @@ export function CreateRoomButton() {
       preset="primary"
       onClick={e => {
         e.preventDefault();
-
-        // TODO do this after paymennt accepted: createAndRedirectToNewHub(null, null, false);
+        createAndRedirectToNewHub(null, null, false, props.preCreateCheck);
       }}
     >
       <FormattedMessage id="create-room-button" defaultMessage="Create Room" />
-    </Button> && 
-    <PaymentForm cardTokenizeResponseReceived={(token, buyer) => {
-      if (token.status == 'OK') {
-        console.log('Transaction approved');
-      } else {
-        console.log('Transaction error');
-      }
-    }} />
+    </Button>
   );
 }
