@@ -16,24 +16,6 @@ import { scaledThumbnailUrlFor } from "../../utils/media-url-utils";
 import { Column } from "../layout/Column";
 import { Button } from "../input/Button";
 import { Container } from "../layout/Container";
-import { PaymentForm } from "../payments/payment-form"
-import { ensureNewHubPaymentProcessed } from "../payments/payment-form"
-
-class Poopers {
-  static ele;
-  constructor(ele) {
-    Poopers.ele = ele
-    console.log(ele)
-    console.log(Poopers.ele)
-  }
-
-  async slap(name, sceneId, replace) {
-    console.log(Poopers.ele.state)
-    Poopers.ele.setIsShowing(true);
-    const payment = await ensureNewHubPaymentProcessed(name, sceneId, replace);
-    return {ok:payment.processed};
-  }
-}
 
 export function HomePage() {
   const auth = useContext(AuthContext);
@@ -66,15 +48,6 @@ export function HomePage() {
 
   const canCreateRooms = !configs.feature("disable_room_creation") || auth.isAdmin;
 
-  const paymentForm = (
-    <PaymentForm isShowing={false} cardTokenizeResponseReceived={(token, buyer) => {
-      if (token.status == 'OK') {
-        console.log('Transaction approved');
-      } else {
-        console.log('Transaction error');
-      }
-    }} />);
-
   return (
     <PageContainer className={styles.homePage}>
       <Container>
@@ -84,8 +57,7 @@ export function HomePage() {
           </div>
           <div className={styles.appInfo}>
             <div className={styles.appDescription}>{configs.translation("app-description")}</div>
-            {canCreateRooms && <CreateRoomButton preCreateCheck={new Poopers(paymentForm).slap}/>} 
-            {canCreateRooms && paymentForm}
+            {canCreateRooms && <CreateRoomButton isPaymentFormShowing={false}/>}
             <PWAButton />
           </div>
           <div className={styles.heroImageContainer}>

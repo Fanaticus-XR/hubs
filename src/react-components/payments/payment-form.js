@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { SquarePaymentsForm, CreditCardInput } from 'react-square-web-payments-sdk';
 
@@ -10,9 +10,8 @@ export function ensureNewHubPaymentProcessed(name, sceneId, replace) {
 }
 
 export function PaymentForm(props) { // TODO make this modal and likely following the pattern/impl of SignInModal or the like will be good
-    const [isShowing, setIsShowing] = useState(props.isShowing);
 
-    return (isShowing &&
+    return (
         <SquarePaymentsForm
             /**
              * Identifies the calling form with a verified application ID
