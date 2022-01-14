@@ -2,13 +2,6 @@ import React from 'react';
 
 import { SquarePaymentsForm, CreditCardInput } from 'react-square-web-payments-sdk';
 
-export function ensureNewHubPaymentProcessed(name, sceneId, replace) {
-    return new Promise((resolve, reject) => {
-        const payment = { processed: false, message: 'just doing a thing for testing...TODO check status, and show PaymentForm if necessary'};
-        resolve(payment)
-    });
-}
-
 export function PaymentForm(props) { // TODO make this modal and likely following the pattern/impl of SignInModal or the like will be good
 
     return (
