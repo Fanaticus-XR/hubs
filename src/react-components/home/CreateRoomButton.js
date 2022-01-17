@@ -28,16 +28,12 @@ export function CreateRoomButton(props) {
   const [paymentContext, setPaymentContext] = useState({token:void 0, buyer: void 0});
   const breakpoint = useCssBreakpoints();
   
-  const memoized_ensureNewHubPaymentProcessed = useCallback(
-    async (name, sceneId, replace) => {
+  async function ensureNewHubPaymentProcessed(name, sceneId, replace) {
       await sleepUntil(() => { return paymentContext.token }, 20000)
       .finally(() => console.log(paymentContext))
-    },
-    [], // Tells React to memoize regardless of arguments.
-  );
+    }
 
-  const memoized_cardTokenizeResponseReceived = useCallback(
-    (token, buyer) => {
+  function cardTokenizeResponseReceived(token, buyer) {
       paymentContext.token = token;
       paymentContext.buyer = buyer;
       setPaymentContext(paymentContext)
@@ -49,23 +45,18 @@ export function CreateRoomButton(props) {
       } else {
         console.log('Transaction error');
       }
-    },
-    [], // Tells React to memoize regardless of arguments.
-  );
+    }
 
-  const memoized_onClick = useCallback(
-    e => {
+  function onClick(e) {
       e.preventDefault();
       createAndRedirectToNewHub(null, null, false, async (name, sceneId, replace) => {
         setIsPaymentFormShowing(true)
         console.log('will await that to resolve or reject????')
-        await memoized_ensureNewHubPaymentProcessed(name, sceneId, replace);
+        await ensureNewHubPaymentProcessed(name, sceneId, replace);
         console.log('arent i supposed to be awaiting that to resolve or reject????')
         return {ok:paymentContext.token.status == 'OK'} // TODO maybe better to instead reject if not payment.processed...yeah
       });
-    },
-    [], // Tells React to memoize regardless of arguments.
-  );
+    }
 
   return (
     <Container>
@@ -73,11 +64,11 @@ export function CreateRoomButton(props) {
         lg={breakpoint === "sm" || breakpoint === "md"}
         xl={breakpoint !== "sm" && breakpoint !== "md"}
         preset="primary"
-        onClick={memoized_onClick}
+        onClick={onClick}
       >
         <FormattedMessage id="create-room-button" defaultMessage="Create Room" />
       </Button>}
-      {isPaymentFormShowing && <PaymentForm cardTokenizeResponseReceived={memoized_cardTokenizeResponseReceived}/>}
+      {isPaymentFormShowing && <PaymentForm cardTokenizeResponseReceived={cardTokenizeResponseReceived}/>}
     </Container>
   );
 }
