@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { Container } from "../layout/Container";
 import { FormattedMessage } from "react-intl";
 import { createAndRedirectToNewHub } from "../../utils/phoenix-utils";
@@ -6,16 +6,14 @@ import { Button } from "../input/Button";
 import { useCssBreakpoints } from "react-use-css-breakpoints";
 import { PaymentForm } from "../payments/payment-form"
 
-async function sleepUntil(f, timeoutMs) {
+async function sleepUntil(condition, timeoutMs) {
   return new Promise((resolve, reject) => {
-      let timeWas = new Date();
+      let start = new Date();
       let wait = setInterval(function() {
-          if (f()) {
-              console.log("resolved after", new Date() - timeWas, "ms");
+          if (condition()) {
               clearInterval(wait);
               resolve();
-          } else if (new Date() - timeWas > timeoutMs) { // Timeout
-              console.log("rejected after", new Date() - timeWas, "ms");
+          } else if (new Date() - start > timeoutMs) {
               clearInterval(wait);
               reject();
           }
@@ -29,34 +27,40 @@ export function CreateRoomButton(props) {
   const breakpoint = useCssBreakpoints();
   
   async function ensureNewHubPaymentProcessed(name, sceneId, replace) {
-      await sleepUntil(() => { return paymentContext.token }, 20000)
-      .finally(() => console.log(paymentContext))
-    }
+    await sleepUntil(() => { return paymentContext.token }, 30000)
+  }
+
+  function setPaymentContext_Easy(token, buyer) {
+    paymentContext.token = token
+    paymentContext.buyer = buyer
+    setPaymentContext(paymentContext)
+  }
 
   function cardTokenizeResponseReceived(token, buyer) {
-      paymentContext.token = token;
-      paymentContext.buyer = buyer;
-      setPaymentContext(paymentContext)
-  
-      if (token.status == 'OK') {
-        console.log('Transaction approved');
-        console.log(paymentContext)
-        setIsPaymentFormShowing(false)
-      } else {
-        console.log('Transaction error');
-      }
-    }
+    setPaymentContext_Easy(token, buyer) // NOTE: this allows ensureNewHubPaymentProcessed to return positively before timeout
+  }
 
   function onClick(e) {
-      e.preventDefault();
-      createAndRedirectToNewHub(null, null, false, async (name, sceneId, replace) => {
-        setIsPaymentFormShowing(true)
-        console.log('will await that to resolve or reject????')
-        await ensureNewHubPaymentProcessed(name, sceneId, replace);
-        console.log('arent i supposed to be awaiting that to resolve or reject????')
-        return {ok:paymentContext.token.status == 'OK'} // TODO maybe better to instead reject if not payment.processed...yeah
-      });
-    }
+    e.preventDefault();
+    createAndRedirectToNewHub(null, null, false, async (name, sceneId, replace) => {
+      setIsPaymentFormShowing(true)
+      await ensureNewHubPaymentProcessed(name, sceneId, replace);
+      return {ok:paymentContext.token && paymentContext.token.status == 'OK'}
+    })
+    .then(val => {
+      setIsPaymentFormShowing(false)
+      // TODO display 'Creating New Room' GUI
+      // TODO grey out 'Create Room' button to disallow interacting with it while new Hub is created/loaded
+    })
+    .catch(val => {
+      setIsPaymentFormShowing(false)
+      // TODO if Square does not do it automatically, mention why failed and to re-enter or show 'Cancel' button
+      console.log('FAILED with status: ' + (paymentContext.token ? paymentContext.token.status : '<no token, nor status>'))
+    })
+    .finally(() =>
+      setPaymentContext_Easy(void 0, void 0) // reset essentially to allow another attempt, if failed, or just no need to keep it here anyway
+    );
+  }
 
   return (
     <Container>
