@@ -2,6 +2,7 @@ import React from 'react';
 
 import { SquarePaymentsForm, CreditCardInput } from 'react-square-web-payments-sdk';
 
+// NOTE: expecting props to contain a property 'amount' of type 'string' e.g., '15.75' TODO I think there is a way to describe the props requirements...see examples elsewhere
 export function PaymentForm(props) { // TODO make this modal and likely following the pattern/impl of SignInModal or the like will be good
 
     return (
@@ -27,7 +28,7 @@ export function PaymentForm(props) { // TODO make this modal and likely followin
              * reduce the chance of fraudulent transactions.
              */
             createVerificationDetails={() => ({
-                amount: '1.00',
+                amount: props.amount,
                 /* collected from the buyer */
                 billingContact: {
                     addressLines: ['123 Main Street', 'Apartment 1'],
