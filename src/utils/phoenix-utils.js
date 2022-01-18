@@ -193,8 +193,7 @@ export async function createAndRedirectToNewHub(name, sceneId, replace, preCreat
   if (preCreateCheck) {
     let check = await preCreateCheck(name, sceneId, replace);
     if (!check.ok) {
-      console.log('Oops, the pre-create room check did not pass...aborting new hub creation...sorry :-(')
-      return 'not OK';
+      return check;
     }
   }
 
@@ -249,7 +248,7 @@ export async function createAndRedirectToNewHub(name, sceneId, replace, preCreat
     document.location = url;
   }
 
-  return 'OK';
+  return {ok:'OK', errors:void 0};
 }
 
 export function getPresenceEntryForSession(presences, sessionId) {

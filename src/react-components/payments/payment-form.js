@@ -16,7 +16,6 @@ export function PaymentForm(props) { // TODO make this modal and likely followin
              * The result will be a valid credit card or wallet token, or an error.
              */
             cardTokenizeResponseReceived={(token, buyer) => {
-                console.info({ token, buyer });
                 if (props.cardTokenizeResponseReceived) {
                     props.cardTokenizeResponseReceived(token, buyer);
                 }
