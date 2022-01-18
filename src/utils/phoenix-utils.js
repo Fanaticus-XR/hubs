@@ -182,12 +182,19 @@ export function fetchReticulumAuthenticated(url, method = "GET", payload) {
   });
 }
 
-export async function createAndRedirectToNewHub(name, sceneId, replace) {
+export async function createAndRedirectToNewHub(name, sceneId, replace, preCreateCheck) {
   const createUrl = getReticulumFetchUrl("/api/v1/hubs");
   const payload = { hub: { name: name || generateHubName() } };
-
+  
   if (sceneId) {
     payload.hub.scene_id = sceneId;
+  }
+
+  if (preCreateCheck) {
+    let check = await preCreateCheck(name, sceneId, replace);
+    if (!check.ok) {
+      return check;
+    }
   }
 
   const headers = { "content-type": "application/json" };
@@ -240,6 +247,8 @@ export async function createAndRedirectToNewHub(name, sceneId, replace) {
   } else {
     document.location = url;
   }
+
+  return {ok:'OK', errors:void 0};
 }
 
 export function getPresenceEntryForSession(presences, sessionId) {

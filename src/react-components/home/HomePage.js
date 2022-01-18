@@ -57,7 +57,7 @@ export function HomePage() {
           </div>
           <div className={styles.appInfo}>
             <div className={styles.appDescription}>{configs.translation("app-description")}</div>
-            {canCreateRooms && <CreateRoomButton />}
+            {canCreateRooms && <CreateRoomButton paymentRequired="4.99"/>}
             <PWAButton />
           </div>
           <div className={styles.heroImageContainer}>
