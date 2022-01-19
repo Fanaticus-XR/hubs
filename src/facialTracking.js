@@ -1,6 +1,8 @@
-import { Component } from "react";
+import React, { Component } from "react";
+import ReactDOM from "react-dom";
+import { Container } from "./react-components/layout/Container";
 
-var path = require("path");
+import { faceapi } from "./assets/third-party-libs/face-api/face-api"
 
 // The following imports of face tracking files is where all the custom loading is for getting this file content available to the face-api in a hubs approved way (see also webpack.config.js)
 import tinyFaceDetectorModelWeights from "../src/assets/third-party-libs/face-api/models/tiny_face_detector_model-weights_manifest.json";
@@ -14,7 +16,7 @@ export default class FacialTracking extends Component {
         super();
     }
     
-    start(faceapi) {
+    async trackFace(faceapi, applySingleFaceDetection) {
         const video = document.getElementById('facialTrackingVideoView');
     
         video.addEventListener('play', () => {
@@ -25,10 +27,12 @@ export default class FacialTracking extends Component {
             setInterval(async () => {
 //                const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
                 const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks()
+                applySingleFaceDetection(detections)
+                
                 //const resizedDetections = faceapi.resizeResults(detections, displaySize)
-                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
+                //canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
 //                faceapi.draw.drawDetections(canvas, resizedDetections)
-                faceapi.draw.drawFaceLandmarks(canvas, detections)
+                //faceapi.draw.drawFaceLandmarks(canvas, detections)
 //                faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
             }, 100)
         });
@@ -58,4 +62,21 @@ export default class FacialTracking extends Component {
             console.log("getUserMedia is a NO GO sir!");
         }
     }
+
+    componentDidMount() {
+      this.trackFace(faceapi, (detections) => console.log('mcjalou..detections:' + detections));
+    }
+
+    render() {
+        return (
+          <Container>
+            <video hidden id="facialTrackingVideoView" width="720" height="560" autoPlay muted></video>
+          </Container>
+          )
+    }
 }
+    
+document.addEventListener("DOMContentLoaded", () => {
+    ReactDOM.render(<FacialTracking />, document.getElementById("face-tracking"));
+  });
+  
