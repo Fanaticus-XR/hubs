@@ -12,6 +12,18 @@ import { waitForDOMContentLoaded } from "../utils/async-utils";
 const components = [];
 const networkedByComponent = new Map();
 export class FaceTrackingSystem {
+  mostRecenteDetections = {}
+  
+  addFaceDetections(detections) {
+    console.log('got eem: ' + detections)
+    //this.mostRecenteDetections = detections // TODO add to a collection and correlate to the current timestamp
+  }
+
+  getFaceOrientation() {
+     // TODO use past values in mostRecenteDetections collection and interpolate/extrapolate baesd on time
+     return this.mostRecenteDetections ? this.mostRecenteDetections : {x:45, y: 23, z: 219};
+  }
+
   tick() {
     for (let i = 0; i < components.length; i++) {
       const cmp = components[i];
@@ -21,10 +33,10 @@ export class FaceTrackingSystem {
       if (isFaceBeingTracked) {
         try {
             const isMine = NAF.utils.isMine(cmp.el);
-            console.log('isMine: ' + isMine);
             if (isMine) {
                 // TODO use webcam to get face orientation then derive the rotation and position to be set directly below
-                rotation.set(45, 23, 219);
+                const faceOrientation = this.getFaceOrientation()
+                rotation.set(faceOrientation.x, faceOrientation.y, faceOrientation.z);
                 
                 obj.matrixNeedsUpdate = true;
                 // Normally this object being invisible would cause it not to get updated even though the matrixNeedsUpdate flag is set, force it

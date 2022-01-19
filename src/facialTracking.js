@@ -12,11 +12,20 @@ import faceLandmark86ModelWeights from "../src/assets/third-party-libs/face-api/
 import faceLandmark86Bin from "!!binary-loader!../src/assets/third-party-libs/face-api/models/face_landmark_68_model-shard1.bin";
 
 export default class FacialTracking extends Component {
+    faceTrackingSystem = void 0;
+    
     constructor() {
         super();
+
+        this.faceTrackingSystem = document.querySelector("a-scene").systems["hubs-systems"].faceTrackingSystem
+        console.log('faceTrackingSystem: ' + this.faceTrackingSystem)
     }
     
-    async trackFace(faceapi, applySingleFaceDetection) {
+    applySingleFaceDetection(detections) {
+        this.faceTrackingSystem.addFaceDetections(detections)
+    }
+
+    async trackFace() {
         const video = document.getElementById('facialTrackingVideoView');
     
         video.addEventListener('play', () => {
@@ -25,26 +34,16 @@ export default class FacialTracking extends Component {
             const displaySize = { width: video.width, height: video.height }
             faceapi.matchDimensions(canvas, displaySize)
             setInterval(async () => {
-//                const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
                 const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks()
-                applySingleFaceDetection(detections)
-                
-                //const resizedDetections = faceapi.resizeResults(detections, displaySize)
-                //canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
-//                faceapi.draw.drawDetections(canvas, resizedDetections)
-                //faceapi.draw.drawFaceLandmarks(canvas, detections)
-//                faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
+                this.applySingleFaceDetection(detections)
             }, 100)
         });
         
-        
         const modelsLoc = '/hubs/assets/src/third-party-libs/face-api/models'; // IMPORTANT: This is not used and is only here to have something to pass in to existing functions below without having to do too much refactoring in their code
-
         Promise.all([
+            // IMPORTANT: loadFromUri is a misnomer as it only loads from the provided uri *if* the arguments of the json and bin files are not provided, which as of now must be provided as the files are not available at those uris based on how hubs+webpack deploys and exposes stuff
             faceapi.nets.tinyFaceDetector.loadFromUri(modelsLoc, tinyFaceDetectorModelWeights, tinyFaceDetectorBin),
             faceapi.nets.faceLandmark68Net.loadFromUri(modelsLoc, faceLandmark86ModelWeights, faceLandmark86Bin)
-            //faceapi.nets.faceRecognitionNet.loadFromUri(modelsLoc),
-            //faceapi.nets.faceExpressionNet.loadFromUri(modelsLoc)
         ]).then(this._startVideo);
     }
     
@@ -59,18 +58,18 @@ export default class FacialTracking extends Component {
                 console.log("Something went wrong!");
               });
         } else {
-            console.log("getUserMedia is a NO GO sir!");
+            console.log("getUserMedia is a NO GO!");
         }
     }
 
     componentDidMount() {
-      this.trackFace(faceapi, (detections) => console.log('mcjalou..detections:' + detections));
+      this.trackFace()
     }
 
     render() {
         return (
           <Container>
-            <video hidden id="facialTrackingVideoView" width="720" height="560" autoPlay muted></video>
+            <video /*hidden*/ id="facialTrackingVideoView" width="720" height="560" autoPlay muted></video>
           </Container>
           )
     }
@@ -78,5 +77,5 @@ export default class FacialTracking extends Component {
     
 document.addEventListener("DOMContentLoaded", () => {
     ReactDOM.render(<FacialTracking />, document.getElementById("face-tracking"));
-  });
+});
   
