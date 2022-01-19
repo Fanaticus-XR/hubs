@@ -11,12 +11,25 @@ import { waitForDOMContentLoaded } from "../utils/async-utils";
 
 const components = [];
 const networkedByComponent = new Map();
+
+const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+
+const vec3ToAttributeString = (vec3) => '' + vec3.x + ' ' + vec3.y + ' ' + vec3.z;
+
 export class FaceTrackingSystem {
   mostRecenteDetections = {}
   
   addFaceDetections(detections) {
-    console.log('got eem: ' + detections)
-    //this.mostRecenteDetections = detections // TODO add to a collection and correlate to the current timestamp
+    if (detections) {
+      try {
+        const box = detections.alignedRect.box
+        this.mostRecenteDetections =  {x:clamp(box.x, 0, 359), y:clamp(box.y, 0, 359), z: 0};
+  
+        // TODO add to a collection and correlate to the current timestamp
+      } catch {
+        this.mostRecenteDetections =  void 0; // TODO remove this as it really doesn't make sense in the long run...final impl
+      }
+    }
   }
 
   getFaceOrientation() {
@@ -36,7 +49,7 @@ export class FaceTrackingSystem {
             if (isMine) {
                 // TODO use webcam to get face orientation then derive the rotation and position to be set directly below
                 const faceOrientation = this.getFaceOrientation()
-                rotation.set(faceOrientation.x, faceOrientation.y, faceOrientation.z);
+                rotation.set(faceOrientation.x, faceOrientation.y, faceOrientation.z); // NOTE: this appears to have no effect! versus the below IMPORTANT comment
                 
                 obj.matrixNeedsUpdate = true;
                 // Normally this object being invisible would cause it not to get updated even though the matrixNeedsUpdate flag is set, force it
@@ -46,7 +59,7 @@ export class FaceTrackingSystem {
                     const networkedEl = networkedByComponent.get(cmp);
                     if (networkedEl) {
                         //console.log('about to manually set rotation on networkId: ' + networkedEl.data.networkId);
-                        networkedEl.setAttribute('rotation', '45 23 219'); // IMPORTANT: This sets the entire body rotation it seems
+                        networkedEl.setAttribute('rotation', vec3ToAttributeString(faceOrientation)); // IMPORTANT: This sets the entire body rotation it seems
 
                     }
                 } catch (e) { console.log(e) }
