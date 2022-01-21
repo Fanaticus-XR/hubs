@@ -117,7 +117,7 @@ export function HomePage() {
       {sortedPublicRooms.length > 0 && (
         <Container className={styles.roomsContainer}>
           <h3 className={styles.roomsHeading}>
-            <FormattedMessage id="home-page.public--rooms" defaultMessage="Public Rooms" />
+            <FormattedMessage id="home-page.public--rooms" defaultMessage="Public Planets" />
           </h3>
           <Column grow padding className={styles.rooms}>
             <MediaGrid center>
@@ -161,7 +161,7 @@ export function HomePage() {
       <Container>
         <Column padding center grow>
           <Button lg preset="primary" as="a" href="/link">
-            <FormattedMessage id="home-page.have-code" defaultMessage="Have a room code?" />
+            <FormattedMessage id="home-page.have-code" defaultMessage="Have a planet code?" />
           </Button>
         </Column>
       </Container>

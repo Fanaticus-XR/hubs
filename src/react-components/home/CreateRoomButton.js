@@ -28,7 +28,7 @@ export function CreateRoomButton(props) {
   const [postPaymentMsg, setPostPaymentMsg] = useState('');
   const [paymentContext, setPaymentContext] = useState({token:void 0, buyer: void 0});
   const breakpoint = useCssBreakpoints();
-  const prePaymentMsg = "Ability to Create Room requires payment of $" + props.paymentRequired + " USD.  Please enter your payment information and click 'Pay' to proceed."
+  const prePaymentMsg = "Ability to Create Planet requires payment of $" + props.paymentRequired + " USD.  Please enter your payment information and click 'Pay' to proceed."
   const isPaymentRequired = props.paymentRequired && props.paymentRequired != '' && props.paymentRequired != '0' && props.paymentRequired != '0.00'
 
   async function ensureNewHubPaymentProcessed(name, sceneId, replace) {
@@ -97,7 +97,7 @@ export function CreateRoomButton(props) {
         preset="primary"
         onClick={onClick}
       >
-        <FormattedMessage id="create-room-button" defaultMessage="Create Room" />
+        <FormattedMessage id="create-room-button" defaultMessage="Create Planet" />
       </Button>}
       {isPaymentFormShowing && <PaymentForm cardTokenizeResponseReceived={cardTokenizeResponseReceived} amount={props.paymentRequired}/>}
       {postPaymentMsg}

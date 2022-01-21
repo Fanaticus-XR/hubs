@@ -3,13 +3,13 @@ import { AVAILABLE_LOCALES, FALLBACK_LOCALES } from "../assets/locales/locale_co
 
 // These are set in the admin panel and are only included as fallbacks.
 const defaultLocaleData = {
-  "app-name": "App",
-  "editor-name": "Scene Editor",
-  "contact-email": "app@company.com",
-  "company-name": "Company",
+  "app-name": "Galaxy",
+  "editor-name": "Planet Creator",
+  "contact-email": "galaxy@fanaticusxr.com",
+  "company-name": "Fanaticus XR",
   "share-hashtag": "#app",
-  "app-description": "Share a virtual room with friends. Watch videos, play with 3D objects, or just hang out.",
-  "app-tagline": "Private social VR in your web browser"
+  "app-description": "Hop on a virtual planet with friends. Experience fun activities in new worlds or simply hang out.",
+  "app-tagline": "Low friction, easy to access social VR in your web browser"
 };
 
 const DEFAULT_LOCALE = "en";

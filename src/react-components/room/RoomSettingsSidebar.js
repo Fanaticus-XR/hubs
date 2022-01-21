@@ -68,11 +68,11 @@ export function RoomSettingsSidebar({
           autoComplete="off"
           placeholder={intl.formatMessage({
             id: "room-settings-sidebar.name-placeholder",
-            defaultMessage: "Room name"
+            defaultMessage: "Planet name"
           })}
           minLength={1}
           maxLength={64}
-          label={<FormattedMessage id="room-settings-sidebar.name" defaultMessage="Room Name" />}
+          label={<FormattedMessage id="room-settings-sidebar.name" defaultMessage="Planet Name" />}
           ref={register}
           error={errors.name}
           fullWidth
@@ -82,9 +82,9 @@ export function RoomSettingsSidebar({
           autoComplete="off"
           placeholder={intl.formatMessage({
             id: "room-settings-sidebar.description-placeholder",
-            defaultMessage: "Room Description"
+            defaultMessage: "Planet Description"
           })}
-          label={<FormattedMessage id="room-settings-sidebar.description" defaultMessage="Room Description" />}
+          label={<FormattedMessage id="room-settings-sidebar.description" defaultMessage="Planet Description" />}
           minRows={3}
           ref={register}
           error={errors.description}
@@ -99,13 +99,13 @@ export function RoomSettingsSidebar({
             id: "room-settings-sidebar.room-size-placeholder",
             defaultMessage: "Member Limit"
           })}
-          label={<FormattedMessage id="room-settings-sidebar.room-size" defaultMessage="Room Size" />}
+          label={<FormattedMessage id="room-settings-sidebar.room-size" defaultMessage="Planet Size" />}
           ref={register}
           error={errors.room_size}
           fullWidth
         />
         <RadioInputField
-          label={<FormattedMessage id="room-settings-sidebar.room-access" defaultMessage="Room Access" />}
+          label={<FormattedMessage id="room-settings-sidebar.room-access" defaultMessage="Planet Access" />}
           fullWidth
         >
           <RadioInputOption
@@ -152,7 +152,7 @@ export function RoomSettingsSidebar({
           />
         )}
         <InputField
-          label={<FormattedMessage id="room-settings-sidebar.permissions" defaultMessage="Room Member Permissions" />}
+          label={<FormattedMessage id="room-settings-sidebar.permissions" defaultMessage="Planet Member Permissions" />}
           fullWidth
         >
           <div className={styles.roomPermissions}>

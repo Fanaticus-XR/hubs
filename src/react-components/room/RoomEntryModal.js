@@ -40,7 +40,7 @@ export function RoomEntryModal({
           )}
         <div className={styles.roomName}>
           <h5>
-            <FormattedMessage id="room-entry-modal.room-name-label" defaultMessage="Room Name" />
+            <FormattedMessage id="room-entry-modal.room-name-label" defaultMessage="Planet Name" />
           </h5>
           <p>{roomName}</p>
         </div>
@@ -49,7 +49,7 @@ export function RoomEntryModal({
             <Button preset="accent4" onClick={onJoinRoom}>
               <EnterIcon />
               <span>
-                <FormattedMessage id="room-entry-modal.join-room-button" defaultMessage="Join Room" />
+                <FormattedMessage id="room-entry-modal.join-room-button" defaultMessage="Join Planet" />
               </span>
             </Button>
           )}

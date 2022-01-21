@@ -24,36 +24,36 @@ export function CloseRoomModal({ roomName, onClose, onConfirm }) {
 
   return (
     <Modal
-      title={<FormattedMessage id="close-room-modal.title" defaultMessage="Close Room" />}
+      title={<FormattedMessage id="close-room-modal.title" defaultMessage="Exit Planet" />}
       beforeTitle={<CloseButton onClick={onClose} />}
     >
       <Column padding center centerMd="both" grow>
         <p>
           <FormattedMessage
             id="close-room-modal.message"
-            defaultMessage="Closing this room will remove yourself and others from the room, shutting it down permanently.{linebreak}Are you sure? This action cannot be undone."
+            defaultMessage="Exiting this panet will remove yourself and others from the planet, shutting it down permanently.{linebreak}Are you sure? This action cannot be undone."
             values={{ linebreak: <br /> }}
           />
         </p>
         <p>
           <FormattedMessage
             id="close-room-modal.type-to-confirm"
-            defaultMessage="Type room name to confirm: {roomName}"
+            defaultMessage="Type planet name to confirm: {roomName}"
             values={{ roomName: <b>{roomName}</b> }}
           />
         </p>
         <TextInputField
-          label={<FormattedMessage id="close-room-modal.confirm-room-name-field" defaultMessage="Confirm Room Name" />}
+          label={<FormattedMessage id="close-room-modal.confirm-room-name-field" defaultMessage="Confirm Planet Name" />}
           onChange={e => setConfirmText(e.target.value)}
           value={confirmText}
           error={
             showIsNotMatchError && (
-              <FormattedMessage id="close-room-modal.room-name-match-error" defaultMessage="Room name does not match" />
+              <FormattedMessage id="close-room-modal.room-name-match-error" defaultMessage="Planet name does not match" />
             )
           }
         />
         <Button preset="accept" onClick={onClickConfirm}>
-          <FormattedMessage id="close-room-modal.confirm" defaultMessage="Yes, Close Room" />
+          <FormattedMessage id="close-room-modal.confirm" defaultMessage="Yes, Exit Planet" />
         </Button>
         <CancelButton onClick={onClose} />
       </Column>
