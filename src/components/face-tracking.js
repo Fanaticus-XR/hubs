@@ -1,6 +1,8 @@
 import { findAncestorWithComponent } from "../utils/scene-graph";
 import { waitForDOMContentLoaded } from "../utils/async-utils";
 
+var InterpolationBuffer = require('buffered-interpolation');
+
 /**
  * Face tracking component for A-Frame using face-api.js.
  * @namespace avatar
@@ -32,42 +34,53 @@ const maxRelativeMovement = ({x: 0.6, y: 0.3}) // 0.3 is just under 1 foot in ei
 
 export class FaceTrackingSystem {
   mostRecentDetections = {} // each item is a bound vec3, with only x and y populated, between the values of -maxRelativeMovement to maxRelativeMovement
-  firstBox = void 0 // TODO no longer ASSuME the first box is essentially centered....TODO require player to go through tracking calibration to detect min/max values!
   boxMin = {x: Number.MAX_VALUE, y: Number.MAX_VALUE}
   boxMax = {x: Number.MIN_VALUE, y: Number.MIN_VALUE}
   origPos = void 0
+  myComponent = void 0
+  myBuffer = void 0
+  myBufferPosition = new THREE.Vector3()
 
   addFaceDetections(detections) {
     if (detections) {
       try {
         const box = detections.alignedRect.box
-        //if (!this.firstBox) this.firstBox = {x: box.x, y: box.y} // every follow on movement will be applied relative to these values!
         if (box.x < this.boxMin.x) this.boxMin.x = box.x 
         if (box.y < this.boxMin.y) this.boxMin.y = box.y 
         if (box.x > this.boxMax.x) this.boxMax.x = box.x 
         if (box.y > this.boxMax.y) this.boxMax.y = box.y 
         
-        //this.mostRecentDetections =  {x:(box.x - this.firstBox.x) / 10, y:(box.x - this.firstBox.y) / 10, z: 0};
         const boxRange = subVec3(this.boxMax, this.boxMin)
         this.mostRecentDetections =  new THREE.Vector3( // put the values in the range of -maxRelativeMovement to maxRelativeMovement
           -(((box.x - this.boxMin.x) / boxRange.x) - 0.5) * 2 * maxRelativeMovement.x,
           -(((box.y - this.boxMin.y) / boxRange.y) - 0.5) * 2 * maxRelativeMovement.y, // have to negate Y since screen Y increases downward as scene Y increases upward
           0)
 
-        // TODO add to a collection and correlate to the current timestamp
+        if (this.myComponent) {
+          if (!this.myBuffer) {
+            this.myBuffer = { buffer: new InterpolationBuffer(InterpolationBuffer.MODE_LERP, 0.15), // NOTE: the face detection is running @ 10 Hz, so this ought to be just a little behind that for smoother outcome
+              object3D: this.myComponent.el.object3D,
+              componentNames: ['position'] };
+          }
+          this.myBuffer.buffer.setPosition(this.myBufferPosition.set(this.mostRecentDetections.x, this.mostRecentDetections.y, this.mostRecentDetections.z));
+        }
       } catch (e) {
-        console.log(e)
         this.mostRecentDetections =  void 0; // TODO remove this as it really doesn't make sense in the long run...final impl
       }
     }
   }
 
-  getFaceOrientation() {
-     // TODO use past values in mostRecentDetections collection and interpolate/extrapolate baesd on time
-     return this.mostRecentDetections ? this.mostRecentDetections : vec3zero;
+  // NOTE: this needs to be called in tick so the buffer gets updated with delta time (dt) in order to buffer interpolate
+  getFaceOrientation(dt) {
+    if (this.myBuffer) {
+      let buffer = this.myBuffer.buffer
+      buffer.update(dt)
+      return buffer.getPosition()
+    }
+    return this.mostRecentDetections ? this.mostRecentDetections : vec3zero;
   }
 
-  tick() {
+  tick(dt) {
     for (let i = 0; i < components.length; i++) {
       const cmp = components[i];
       const obj = cmp.el.object3D;
@@ -77,7 +90,8 @@ export class FaceTrackingSystem {
         try {
             const isMine = NAF.utils.isMine(cmp.el);
             if (isMine) {
-              const faceOrientation = this.getFaceOrientation().clone()
+              if (!this.myComponent) this.myComponent = cmp
+              const faceOrientation = this.getFaceOrientation(dt).clone()
               faceOrientation.applyQuaternion(obj.quaternion) // put it into relative orientation not absolute/world orientation               
               const newPos = addVec3(origPosByEl.get(cmp.el), faceOrientation) // NOTE: faceOrientation is relative and is now applied to original position to yield final pos
               
