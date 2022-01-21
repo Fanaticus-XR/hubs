@@ -30,12 +30,12 @@ const subVec3 = (v1, v2) => new THREE.Vector3(v1.x - v2.x, v1.y - v2.y, v1.z - v
 const mulVec3 = (v1, v2) => new THREE.Vector3(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z)
 const divVec3 = (v1, v2) => new THREE.Vector3(v1.x / v2.x, v1.y / v2.y, v1.z / v2.z)
 
-const maxRelativeMovement = ({x: 0.6, y: 0.3}) // 0.3 is just under 1 foot in either direction
+const maxRelativeMovement = new THREE.Vector3(0.6, 0.3, 0.6) // 0.3 is just under 1 foot in either direction
 
 export class FaceTrackingSystem {
   mostRecentDetections = {} // each item is a bound vec3, with only x and y populated, between the values of -maxRelativeMovement to maxRelativeMovement
-  boxMin = {x: Number.MAX_VALUE, y: Number.MAX_VALUE}
-  boxMax = {x: Number.MIN_VALUE, y: Number.MIN_VALUE}
+  boxMin = {x: Number.MAX_VALUE, y: Number.MAX_VALUE, z: Number.MAX_VALUE}
+  boxMax = {x: Number.MIN_VALUE, y: Number.MIN_VALUE, z: Number.MIN_VALUE}
   origPos = void 0
   myComponent = void 0
   myBuffer = void 0
@@ -45,16 +45,21 @@ export class FaceTrackingSystem {
     if (detections) {
       try {
         const box = detections.alignedRect.box
+        const size = box.width * box.height
+        
         if (box.x < this.boxMin.x) this.boxMin.x = box.x 
         if (box.y < this.boxMin.y) this.boxMin.y = box.y 
+        if (size < this.boxMin.z) this.boxMin.z = size
+        
         if (box.x > this.boxMax.x) this.boxMax.x = box.x 
         if (box.y > this.boxMax.y) this.boxMax.y = box.y 
+        if (size > this.boxMax.z) this.boxMax.z = size
         
         const boxRange = subVec3(this.boxMax, this.boxMin)
         this.mostRecentDetections =  new THREE.Vector3( // put the values in the range of -maxRelativeMovement to maxRelativeMovement
           -(((box.x - this.boxMin.x) / boxRange.x) - 0.5) * 2 * maxRelativeMovement.x,
           -(((box.y - this.boxMin.y) / boxRange.y) - 0.5) * 2 * maxRelativeMovement.y, // have to negate Y since screen Y increases downward as scene Y increases upward
-          0)
+          -(((size - this.boxMin.z) / boxRange.z) - 0.5) * 2 * maxRelativeMovement.z)
 
         if (this.myComponent) {
           if (!this.myBuffer) {
@@ -65,7 +70,7 @@ export class FaceTrackingSystem {
           this.myBuffer.buffer.setPosition(this.myBufferPosition.set(this.mostRecentDetections.x, this.mostRecentDetections.y, this.mostRecentDetections.z));
         }
       } catch (e) {
-        this.mostRecentDetections =  void 0; // TODO remove this as it really doesn't make sense in the long run...final impl
+        this.mostRecentDetections =  void 0;
       }
     }
   }
@@ -84,7 +89,7 @@ export class FaceTrackingSystem {
     for (let i = 0; i < components.length; i++) {
       const cmp = components[i];
       const obj = cmp.el.object3D;
-      const { visible, position } = obj;
+      const { position } = obj;
       const { isFaceBeingTracked } = cmp.data;
       if (isFaceBeingTracked) {
         try {
@@ -94,19 +99,11 @@ export class FaceTrackingSystem {
               const faceOrientation = this.getFaceOrientation(dt).clone()
               faceOrientation.applyQuaternion(obj.quaternion) // put it into relative orientation not absolute/world orientation               
               const newPos = addVec3(origPosByEl.get(cmp.el), faceOrientation) // NOTE: faceOrientation is relative and is now applied to original position to yield final pos
-              
-              //const newPos = addVec3(origPosByEl.get(cmp.el), faceOrientation) // NOTE: faceOrientation is relative and is now applied to original position to yield final pos
               position.set(newPos.x, newPos.y, newPos.z);
               obj.matrixNeedsUpdate = true;
               // Normally this object being invisible would cause it not to get updated even though the matrixNeedsUpdate flag is set, force it
               obj.updateMatrixWorld(true, true);
               obj.updateMatrices();
-
-              const networkedEl = networkedByComponent.get(cmp);
-              if (networkedEl) {
-                //const newPosNet = addVec3(networkedEl.getAttribute('position'), faceOrientation) // NOTE: faceOrientation is relative and is now applied to original position to yield final pos
-                //networkedEl.setAttribute('position', vec3ToAttrString(newPosNet)); // IMPORTANT: This sets the entire body instead of head...so head is not networked
-              }
             }
         } catch (e) { console.log(e) }  
       }
