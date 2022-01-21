@@ -124,7 +124,7 @@ export function MicSetupModal({
           />
         </>
         <Button preset="accept" onClick={onEnterRoom}>
-          <FormattedMessage id="mic-setup-modal.enter-room-button" defaultMessage="Enter Room" />
+          <FormattedMessage id="mic-setup-modal.enter-room-button" defaultMessage="Enter Planet" />
         </Button>
       </Column>
     </Modal>
