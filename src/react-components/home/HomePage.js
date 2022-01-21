@@ -42,7 +42,7 @@ export function HomePage() {
     }
 
     if (qs.has("new")) {
-      createAndRedirectToNewHub(null, null, true);
+      createAndRedirectToNewHub(null, null, true); // TODO FIXME this needs to pass in the final arg for preCreateCheck just like in CreateRoomButton!
     }
   }, []);
 
@@ -163,9 +163,6 @@ export function HomePage() {
           <Button lg preset="primary" as="a" href="/link">
             <FormattedMessage id="home-page.have-code" defaultMessage="Have a room code?" />
           </Button>
-          <Container>
-            <video id="facialTrackingVideoView" width="720" height="560" autoPlay muted></video>
-          </Container>
         </Column>
       </Container>
     </PageContainer>

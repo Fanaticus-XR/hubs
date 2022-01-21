@@ -167,6 +167,7 @@ import { App } from "./App";
 import MediaDevicesManager from "./utils/media-devices-manager";
 import { sleep } from "./utils/async-utils";
 import { platformUnsupported } from "./support";
+import "./facialTracking";
 
 window.APP = new App();
 window.APP.RENDER_ORDER = {

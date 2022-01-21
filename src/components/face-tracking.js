@@ -1,6 +1,8 @@
 import { findAncestorWithComponent } from "../utils/scene-graph";
 import { waitForDOMContentLoaded } from "../utils/async-utils";
 
+var InterpolationBuffer = require('buffered-interpolation');
+
 /**
  * Face tracking component for A-Frame using face-api.js.
  * @namespace avatar
@@ -11,50 +13,99 @@ import { waitForDOMContentLoaded } from "../utils/async-utils";
 
 const components = [];
 const networkedByComponent = new Map();
+const origPosByEl = new Map();
+
+const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+
+const vec3ToAttrString = (vec3) => '' + vec3.x + ' ' + vec3.y + ' ' + vec3.z;
+
+const attrStringToVec3 = (attrString) => { 
+  const eles = attrString.split(' ')
+  return new THREE.Vector3(parseFloat(ele[0]), parseFloat(ele[1]), parseFloat(ele[2]))
+}
+
+const vec3zero = new THREE.Vector3()
+const addVec3 = (v1, v2) => new THREE.Vector3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z)
+const subVec3 = (v1, v2) => new THREE.Vector3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z)
+const mulVec3 = (v1, v2) => new THREE.Vector3(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z)
+const divVec3 = (v1, v2) => new THREE.Vector3(v1.x / v2.x, v1.y / v2.y, v1.z / v2.z)
+
+const maxRelativeMovement = new THREE.Vector3(0.6, 0.3, 0.6) // 0.3 is just under 1 foot in either direction
+
 export class FaceTrackingSystem {
-  tick() {
+  mostRecentDetections = {} // each item is a bound vec3, with only x and y populated, between the values of -maxRelativeMovement to maxRelativeMovement
+  boxMin = {x: Number.MAX_VALUE, y: Number.MAX_VALUE, z: Number.MAX_VALUE}
+  boxMax = {x: Number.MIN_VALUE, y: Number.MIN_VALUE, z: Number.MIN_VALUE}
+  origPos = void 0
+  myComponent = void 0
+  myBuffer = void 0
+  myBufferPosition = new THREE.Vector3()
+
+  addFaceDetections(detections) {
+    if (detections) {
+      try {
+        const box = detections.alignedRect.box
+        const size = box.width * box.height
+        
+        if (box.x < this.boxMin.x) this.boxMin.x = box.x 
+        if (box.y < this.boxMin.y) this.boxMin.y = box.y 
+        if (size < this.boxMin.z) this.boxMin.z = size
+        
+        if (box.x > this.boxMax.x) this.boxMax.x = box.x 
+        if (box.y > this.boxMax.y) this.boxMax.y = box.y 
+        if (size > this.boxMax.z) this.boxMax.z = size
+        
+        const boxRange = subVec3(this.boxMax, this.boxMin)
+        this.mostRecentDetections =  new THREE.Vector3( // put the values in the range of -maxRelativeMovement to maxRelativeMovement
+          -(((box.x - this.boxMin.x) / boxRange.x) - 0.5) * 2 * maxRelativeMovement.x,
+          -(((box.y - this.boxMin.y) / boxRange.y) - 0.5) * 2 * maxRelativeMovement.y, // have to negate Y since screen Y increases downward as scene Y increases upward
+          -(((size - this.boxMin.z) / boxRange.z) - 0.5) * 2 * maxRelativeMovement.z)
+
+        if (this.myComponent) {
+          if (!this.myBuffer) {
+            this.myBuffer = { buffer: new InterpolationBuffer(InterpolationBuffer.MODE_LERP, 0.15), // NOTE: the face detection is running @ 10 Hz, so this ought to be just a little behind that for smoother outcome
+              object3D: this.myComponent.el.object3D,
+              componentNames: ['position'] };
+          }
+          this.myBuffer.buffer.setPosition(this.myBufferPosition.set(this.mostRecentDetections.x, this.mostRecentDetections.y, this.mostRecentDetections.z));
+        }
+      } catch (e) {
+        this.mostRecentDetections =  void 0;
+      }
+    }
+  }
+
+  // NOTE: this needs to be called in tick so the buffer gets updated with delta time (dt) in order to buffer interpolate
+  getFaceOrientation(dt) {
+    if (this.myBuffer) {
+      let buffer = this.myBuffer.buffer
+      buffer.update(dt)
+      return buffer.getPosition()
+    }
+    return this.mostRecentDetections ? this.mostRecentDetections : vec3zero;
+  }
+
+  tick(dt) {
     for (let i = 0; i < components.length; i++) {
       const cmp = components[i];
       const obj = cmp.el.object3D;
-      const { visible, rotation } = obj;
+      const { position } = obj;
       const { isFaceBeingTracked } = cmp.data;
       if (isFaceBeingTracked) {
         try {
             const isMine = NAF.utils.isMine(cmp.el);
-            console.log('isMine: ' + isMine);
             if (isMine) {
-                // TODO use webcam to get face orientation then derive the rotation and position to be set directly below
-                rotation.set(45, 23, 219);
-                
-                obj.matrixNeedsUpdate = true;
-                // Normally this object being invisible would cause it not to get updated even though the matrixNeedsUpdate flag is set, force it
-                obj.updateMatrixWorld(true, true);
-                obj.updateMatrices();
-                try {
-                    const networkedEl = networkedByComponent.get(cmp);
-                    if (networkedEl) {
-                        //console.log('about to manually set rotation on networkId: ' + networkedEl.data.networkId);
-                        networkedEl.setAttribute('rotation', '45 23 219'); // IMPORTANT: This sets the entire body rotation it seems
-
-                    }
-                } catch (e) { console.log(e) }
+              if (!this.myComponent) this.myComponent = cmp
+              const faceOrientation = this.getFaceOrientation(dt).clone()
+              faceOrientation.applyQuaternion(obj.quaternion) // put it into relative orientation not absolute/world orientation               
+              const newPos = addVec3(origPosByEl.get(cmp.el), faceOrientation) // NOTE: faceOrientation is relative and is now applied to original position to yield final pos
+              position.set(newPos.x, newPos.y, newPos.z);
+              obj.matrixNeedsUpdate = true;
+              // Normally this object being invisible would cause it not to get updated even though the matrixNeedsUpdate flag is set, force it
+              obj.updateMatrixWorld(true, true);
+              obj.updateMatrices();
             }
         } catch (e) { console.log(e) }  
-
-        /* This was the first attempt at checking if the local player owned the entity associated with this component, but the above worked better
-        if (cmp.playerInfo && cmp.playerInfo.isLocalPlayerInfo) { // NOTE: !visible is ~kinda an indicator as to isLocalPlayerInfo
-            // TODO use webcam to get face orientation then derive the rotation and position to be set directly below
-            rotation.set(45, 23, 219);
-            
-            obj.matrixNeedsUpdate = true;
-            // Normally this object being invisible would cause it not to get updated even though the matrixNeedsUpdate flag is set, force it
-            obj.updateMatrixWorld(true, true);
-            obj.updateMatrices();
-            try {
-                console.log('set rotation' + obj.networked.data.networkId)
-            } catch (e) { console.log(e) }
-        }
-        */
       }
     }
   }
@@ -72,6 +123,7 @@ AFRAME.registerComponent("face-tracking", {
 
       play() {
         components.push(this);
+        origPosByEl.set(this.el, {x:this.el.object3D.position.x, y:this.el.object3D.position.y, z:this.el.object3D.position.z})
         NAF.utils.getNetworkedEntity(this.el).then((networkedEl) => {
             networkedByComponent.set(this, networkedEl)
         });

@@ -1201,6 +1201,7 @@
                 pitch-yaw-rotator
                 set-yxz-order
                 position="0 1.6 0"
+                face-tracking
             >
                 <a-entity class="inspect-pivot" inspect-pivot-offset-from-camera></a-entity>
                 <a-entity
@@ -1262,7 +1263,7 @@
                     </a-entity>
                 </template>
                 <template data-name="Head">
-                    <a-entity id="avatar-head" visible="false" bone-visibility="updateWhileInvisible: true;" rotation face-tracking></a-entity>
+                    <a-entity id="avatar-head" visible="false" bone-visibility="updateWhileInvisible: true;" rotation></a-entity>
                 </template>
 
                 <template data-name="LeftHand">
@@ -1346,6 +1347,7 @@
         </a-entity>
     </a-scene>
 
+    <div id="face-tracking"></div>
     <div id="ui-root"></div>
     <div id="preload-overlay"></div>
 </body>

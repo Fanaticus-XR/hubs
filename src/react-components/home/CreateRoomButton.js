@@ -90,7 +90,7 @@ export function CreateRoomButton(props) {
 
   return (
     <Container>
-      {isPaymentFormShowing && <FormattedMessageArg id="entery-payment-details" defaultMessage={prePaymentMsg}/>}
+      {isPaymentFormShowing && <FormattedMessageArg id="entry-payment-details" defaultMessage={prePaymentMsg}/>}
       {!isPaymentFormShowing && <Button
         lg={breakpoint === "sm" || breakpoint === "md"}
         xl={breakpoint !== "sm" && breakpoint !== "md"}
