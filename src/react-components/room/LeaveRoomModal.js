@@ -15,15 +15,15 @@ export const LeaveReason = {
 const reasonMessages = defineMessages({
   [LeaveReason.leaveRoom]: {
     id: "leave-room-modal.leave-room.message",
-    defaultMessage: "Are you sure you want to leave the room?"
+    defaultMessage: "Are you sure you want to leave the planet?"
   },
   [LeaveReason.joinRoom]: {
     id: "leave-room-modal.join-room.message",
-    defaultMessage: "Joining a new room will leave this one. Are you sure?"
+    defaultMessage: "Joining a new planet will leave this one. Are you sure?"
   },
   [LeaveReason.createRoom]: {
     id: "leave-room-modal.create-room.message",
-    defaultMessage: "Creating a new room will leave this one. Are you sure?"
+    defaultMessage: "Creating a new planet will leave this one. Are you sure?"
   }
 });
 
