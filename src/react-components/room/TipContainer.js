@@ -33,7 +33,7 @@ const onboardingMessages = defineMessages({
   },
   "tips.mobile.invite": {
     id: "tips.mobile.invite",
-    defaultMessage: "Use the Invite button in the bottom left to share this room."
+    defaultMessage: "Use the Invite button in the bottom left to share this planet."
   },
   "tips.desktop.look": {
     id: "tips.desktop.look",
@@ -49,7 +49,7 @@ const onboardingMessages = defineMessages({
   },
   "tips.desktop.invite": {
     id: "tips.desktop.invite",
-    defaultMessage: "Nobody else is here. Use the invite button in the bottom left to share this room."
+    defaultMessage: "Nobody else is here. Use the invite button in the bottom left to share this planet."
   }
 });
 
@@ -148,7 +148,7 @@ export function TipContainer({ hide, inLobby, inRoom, isStreaming, isEmbedded, s
         <Tip onDismiss={() => setBroadcastTipDismissed(true)} dismissLabel={<OkDismissLabel />}>
           <FormattedMessage
             id="tips.discord"
-            defaultMessage="Chat in this room is being bridged to {broadcastTarget} on Discord."
+            defaultMessage="Chat in this planet is being bridged to {broadcastTarget} on Discord."
             values={{ broadcastTarget: discordBridges.map(channelName => "#" + channelName).join(", ") }}
           />
         </Tip>
@@ -160,7 +160,7 @@ export function TipContainer({ hide, inLobby, inRoom, isStreaming, isEmbedded, s
         <Tip onDismiss={() => setEmbeddedTipDismissed(true)} dismissLabel={<OkDismissLabel />}>
           <FormattedMessage
             id="tips.embedded"
-            defaultMessage="This room is embedded, so it may be visible to visitors on other websites."
+            defaultMessage="This planet is embedded, so it may be visible to visitors on other websites."
           />
         </Tip>
       );

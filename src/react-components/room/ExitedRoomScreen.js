@@ -23,23 +23,23 @@ const messages = defineMessages({
   },
   [ExitReason.closed]: {
     id: "exited-room-screen.reason.closed",
-    defaultMessage: "This room is no longer available."
+    defaultMessage: "This planet is no longer available."
   },
   [ExitReason.denied]: {
     id: "exited-room-screen.reason.denied",
-    defaultMessage: "You are not permitted to join this room. Please request permission from the room creator."
+    defaultMessage: "You are not permitted to join this planet. Please request permission from the planet creator."
   },
   [ExitReason.disconnected]: {
     id: "exited-room-screen.reason.disconnected",
-    defaultMessage: "You have disconnected from the room. Refresh the page to try to reconnect."
+    defaultMessage: "You have disconnected from the planet. Refresh the page to try to reconnect."
   },
   [ExitReason.left]: {
     id: "exited-room-screen.reason.left",
-    defaultMessage: "You have left the room."
+    defaultMessage: "You have left the planet."
   },
   [ExitReason.full]: {
     id: "exited-room-screen.reason.full",
-    defaultMessage: "This room is full, please try again later."
+    defaultMessage: "This planet is full, please try again later."
   },
   [ExitReason.sceneError]: {
     id: "exited-room-screen.reason.scene-error",
@@ -47,7 +47,7 @@ const messages = defineMessages({
   },
   [ExitReason.connectError]: {
     id: "exited-room-screen.reason.connect-error",
-    defaultMessage: "Unable to connect to this room, please try again later."
+    defaultMessage: "Unable to connect to this planet, please try again later."
   },
   [ExitReason.versionMismatch]: {
     id: "exited-room-screen.reason.version-mismatch",
@@ -67,14 +67,14 @@ export function ExitedRoomScreen({ reason, showTerms, termsUrl, logoSrc, showSou
         <b>
           <FormattedMessage
             id="exited-room-screen.no-longer-availible"
-            defaultMessage="Sorry, this room is no longer available."
+            defaultMessage="Sorry, this planet is no longer available."
           />
         </b>
         {showTerms && (
           <p>
             <FormattedMessage
               id="exited-room-screen.closed-room-tos"
-              defaultMessage="A room may be closed by the room owner, or if we receive reports that it violates our <toslink>Terms of Use</toslink>."
+              defaultMessage="A planet may be closed by the planet owner, or if we receive reports that it violates our <toslink>Terms of Use</toslink>."
               values={{
                 // eslint-disable-next-line react/display-name
                 toslink: chunks => (
@@ -137,7 +137,7 @@ export function ExitedRoomScreen({ reason, showTerms, termsUrl, logoSrc, showSou
           <p>
             <FormattedMessage
               id="exited-room-screen.create-room"
-              defaultMessage="You can also <a>create a new room</a>."
+              defaultMessage="You can also <a>create a new planet</a>."
               values={{
                 // eslint-disable-next-line react/display-name
                 a: chunks => <a href="/">{chunks}</a>
