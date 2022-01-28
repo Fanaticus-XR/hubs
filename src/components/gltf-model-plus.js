@@ -619,24 +619,16 @@ AFRAME.registerComponent("gltf-model-plus", {
     });
   },
 
-  applyCustomBehavior(entity) {
+  applyCustomBehavior(entity) { // TODO add a hook/callback in here somewhere and have the CustomBehaviorSystem do this!
     entity.object3D.traverse(async object3D => {
-      const entityComponents = getHubsComponents(object3D);
       const el = object3D.el;
-      if (entityComponents && el) {
-        if (object3D.name.includes('Trigger')) { // TODO replace this with 'JSX' and then parse the subsequent 'args' (e.g. 'JSX_component1_component2')
-          console.log('DREETS.....object3D.name: ' + object3D.name)
-          el.setAttribute('custom-behavior', '')
+      if (el) {
+        const JSX_IDENTIFIER = '_JSX_';
+        const iJSX = object3D.name.indexOf(JSX_IDENTIFIER)
+        if (iJSX != -1) {
+          const latter = object3D.name.substring(iJSX + 5)
+          latter.split('_').forEach((componentName) => el.setAttribute(componentName, ''))
         }
-
-        /*
-        for (const prop in entityComponents) {
-          if (entityComponents.hasOwnProperty(prop) && AFRAME.GLTFModelPlus.components.hasOwnProperty(prop)) {
-            const { componentName, inflator } = AFRAME.GLTFModelPlus.components[prop];
-            await inflator(el, componentName, entityComponents[prop], entityComponents, indexToEntityMap);
-          }
-        }
-        */
       }
     });
   },

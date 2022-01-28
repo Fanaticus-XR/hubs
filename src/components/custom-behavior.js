@@ -6,10 +6,7 @@ export class CustomBehaviorSystem {
         const cmp = components[i];
         const obj = cmp.el.object3D;
         try {
-            const isMine = NAF.utils.isMine(cmp.el);
-            console.log('custom behavior being applied...isMine:' + isMine)
-            if (isMine) {
-            }
+            console.log('custom behavior being applied')
         } catch (e) { console.log(e) }  
     }
   }
@@ -28,4 +25,25 @@ AFRAME.registerComponent("custom-behavior", {
         components.splice(components.indexOf(this), 1);
       }
     }
+);
+
+AFRAME.registerComponent("scale-tween", {
+  async init() {
+    await waitForDOMContentLoaded();
+  },
+
+  play() {
+    //components.push(this);
+  },
+
+  pause() {
+    //components.splice(components.indexOf(this), 1);
+  },
+
+  tick() {
+    const scale = Math.random() * 3;
+    this.el.object3D.scale.set(scale, scale, scale);
+    this.el.object3D.matrixNeedsUpdate = true;
+  }
+}
 );
