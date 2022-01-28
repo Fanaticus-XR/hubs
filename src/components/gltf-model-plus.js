@@ -619,6 +619,28 @@ AFRAME.registerComponent("gltf-model-plus", {
     });
   },
 
+  applyCustomBehavior(entity) {
+    entity.object3D.traverse(async object3D => {
+      const entityComponents = getHubsComponents(object3D);
+      const el = object3D.el;
+      if (entityComponents && el) {
+        if (object3D.name.includes('Trigger')) { // TODO replace this with 'JSX' and then parse the subsequent 'args' (e.g. 'JSX_component1_component2')
+          console.log('DREETS.....object3D.name: ' + object3D.name)
+          el.setAttribute('custom-behavior', '')
+        }
+
+        /*
+        for (const prop in entityComponents) {
+          if (entityComponents.hasOwnProperty(prop) && AFRAME.GLTFModelPlus.components.hasOwnProperty(prop)) {
+            const { componentName, inflator } = AFRAME.GLTFModelPlus.components[prop];
+            await inflator(el, componentName, entityComponents[prop], entityComponents, indexToEntityMap);
+          }
+        }
+        */
+      }
+    });
+  },
+
   async applySrc(src, contentType) {
     try {
       if (src === this.lastSrc) return;
@@ -685,6 +707,8 @@ AFRAME.registerComponent("gltf-model-plus", {
         for (const name in this.templates) {
           attachTemplate(this.el, name, this.templates[name]);
         }
+
+        this.applyCustomBehavior(this.inflatedEl);
       }
 
       // The call to setObject3D below recursively clobbers any `el` backreferences to entities
