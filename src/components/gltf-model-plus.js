@@ -626,8 +626,22 @@ AFRAME.registerComponent("gltf-model-plus", {
         const JSX_IDENTIFIER = '_JSX_';
         const iJSX = object3D.name.indexOf(JSX_IDENTIFIER)
         if (iJSX != -1) {
+          console.log('DREETS attempting to add custom behavior(s) to object with name: ' + object3D.name)
           const latter = object3D.name.substring(iJSX + 5)
-          latter.split('_').forEach((componentName) => el.setAttribute(componentName, ''))
+          latter.split('_').forEach((componentName) => {
+            const iJsonOpen = componentName.indexOf('{')
+            if (iJsonOpen != -1) {
+              const iJsonClose = componentName.indexOf('}', iJsonOpen)
+              if (iJsonClose != -1) {
+                const fakeJson = componentName.substring(iJsonOpen, iJsonClose + 1)
+                const realJson = fakeJson.replaceAll('=', ':') // since spoke object names will not keep : and real json has them
+                const args = JSON.parse(realJson)
+                console.log('DREETS realJson: ' + realJson + ' parsed: ' + args)
+              }
+              componentName = componentName.substring(0, iJsonOpen)
+            }
+            el.setAttribute(componentName, '')
+          })
         }
       }
     });

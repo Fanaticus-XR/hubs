@@ -6,7 +6,7 @@ export class CustomBehaviorSystem {
         const cmp = components[i];
         const obj = cmp.el.object3D;
         try {
-            console.log('custom behavior being applied')
+            //console.log('custom behavior being applied')
         } catch (e) { console.log(e) }  
     }
   }

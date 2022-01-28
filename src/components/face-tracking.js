@@ -118,7 +118,6 @@ AFRAME.registerComponent("face-tracking", {
 
       async init() {
         await waitForDOMContentLoaded();
-        this.playerInfo = findAncestorWithComponent(this.el, "player-info").components["player-info"];
       },
 
       play() {
