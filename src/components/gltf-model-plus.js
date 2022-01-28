@@ -619,6 +619,35 @@ AFRAME.registerComponent("gltf-model-plus", {
     });
   },
 
+  applyCustomBehavior(entity) { // TODO add a hook/callback in here somewhere and have the CustomBehaviorSystem do this!
+    entity.object3D.traverse(async object3D => {
+      const el = object3D.el;
+      if (el) {
+        const JSX_IDENTIFIER = '_JSX_';
+        const iJSX = object3D.name.indexOf(JSX_IDENTIFIER)
+        if (iJSX != -1) {
+          const latter = object3D.name.substring(iJSX + 5)
+          latter.split('_').forEach((componentName) => {
+            try {
+              let args = {}
+              const iJsonOpen = componentName.indexOf('{')
+              if (iJsonOpen != -1) {
+                const iJsonClose = componentName.indexOf('}', iJsonOpen)
+                if (iJsonClose != -1) {
+                  const fakeJson = componentName.substring(iJsonOpen, iJsonClose + 1)
+                  const realJson = fakeJson.replaceAll('=', ':') // since spoke object names will not keep : and real json has them
+                  args = JSON.parse(realJson)
+                }
+                componentName = componentName.substring(0, iJsonOpen) // TODO now that we have this, maybe we can update the original object3D.name so it does not have all the extra stuff for custom behavior
+              }
+              el.setAttribute(componentName, args)
+            } catch (e) { console.log(e) }
+          })
+        }
+      }
+    });
+  },
+
   async applySrc(src, contentType) {
     try {
       if (src === this.lastSrc) return;
@@ -685,6 +714,8 @@ AFRAME.registerComponent("gltf-model-plus", {
         for (const name in this.templates) {
           attachTemplate(this.el, name, this.templates[name]);
         }
+
+        this.applyCustomBehavior(this.inflatedEl);
       }
 
       // The call to setObject3D below recursively clobbers any `el` backreferences to entities

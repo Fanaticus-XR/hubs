@@ -31,6 +31,7 @@ import { MediaFramesSystem } from "./media-frames";
 import { InspectYourselfSystem } from "./inspect-yourself-system";
 import { EmojiSystem } from "./emoji-system";
 import { FaceTrackingSystem } from "../components/face-tracking";
+import { CustomBehaviorSystem } from "../components/custom-behavior";
 
 AFRAME.registerSystem("hubs-systems", {
   init() {
@@ -71,6 +72,7 @@ AFRAME.registerSystem("hubs-systems", {
     this.inspectYourselfSystem = new InspectYourselfSystem();
     this.emojiSystem = new EmojiSystem(this.el);
     this.faceTrackingSystem = new FaceTrackingSystem();
+    this.customBehaviorSystem = new CustomBehaviorSystem();
   },
 
   tick(t, dt) {
@@ -116,6 +118,7 @@ AFRAME.registerSystem("hubs-systems", {
     this.shadowSystem.tick();
     this.mediaFramesSystem.tick();
     this.faceTrackingSystem.tick(dt);
+    this.customBehaviorSystem.tick(dt);
     
     // We run this late in the frame so that its the last thing to have an opinion about the scale of an object
     this.boneVisibilitySystem.tick();
