@@ -29,12 +29,13 @@ AFRAME.registerComponent("custom-behavior", {
 
 AFRAME.registerComponent("scale-tween", {
   schema: {
-    smallest: { type: "number", default: 0.5 },
-    largest: { type: "number", default: 3 },
+    minScale: { type: "number", default: 50 }, // IMPORTANT: This is a whole number percentage (e.g., 50 for 50% or 0.5 scale)
+    maxScale: { type: "number", default: 300 }, // IMPORTANT: This is a whole number percentage (e.g., 300 for 300% or 3.0 scale)
+    stopTrigger: { type: "string" },
     oneWayTimeMillis: { type: "number", default: 2000 },
     startTimeMillis: {type: "number", default: 0},
     isGrowing: { type: "boolean", default: true},
-    startScale:  { type: "number", default: 0.5 },
+    startScale:  { type: "number", default: 0.5 }, // NOTE: regular scale values 0.5 is 50% scale
     targetScale:  { type: "number", default: 0.5 }
   },
   
@@ -46,9 +47,9 @@ AFRAME.registerComponent("scale-tween", {
 
   toggleDirection(newStartMillis) {
     this.data.isGrowing = !this.data.isGrowing;
-    const { smallest, largest, isGrowing } = this.data;
-    this.data.startScale = isGrowing ? smallest : largest;
-    this.data.targetScale = isGrowing ? largest : smallest;
+    const { minScale, maxScale, isGrowing } = this.data;
+    this.data.startScale = isGrowing ? minScale / 100 : maxScale / 100;
+    this.data.targetScale = isGrowing ? maxScale / 100 : minScale / 100;
     this.data.startTimeMillis = newStartMillis;
   },
 
