@@ -29,6 +29,8 @@ declare module "aframe" {
   }
 
   interface HubsSystems extends ASystem {
+    customBehaviorSystem: CustomBehaviorSystem;
+    faceTrackingSystem: FaceTrackingSystem;
     cursorTogglingSystem: CursorTogglingSystem;
     interactionSfxSystem: InteractionSfxSystem;
     superSpawnerSystem: SuperSpawnerSystem;
